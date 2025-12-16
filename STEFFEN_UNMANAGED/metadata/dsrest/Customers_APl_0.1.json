@@ -1,0 +1,269 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Customers APl",
+    "description" : "An API for keeping track of your customers",
+    "contact" : { },
+    "version" : "1.0.1"
+  },
+  "servers" : [ {
+    "url" : "https://9fcsbn1.eu.api-mocks.com",
+    "description" : "This is your API mock endpoint. When called, it will simulate the behavior of your API."
+  } ],
+  "security" : [ {
+    "Basic authentication" : [ ]
+  }, {
+    "OpenID Connect" : [ "email" ]
+  } ],
+  "paths" : {
+    "/customers" : {
+      "description" : "customer information",
+      "get" : {
+        "summary" : "Get list of customers",
+        "parameters" : [ {
+          "name" : "filter",
+          "in" : "query",
+          "required" : false,
+          "description" : "Filter on customer names",
+          "schema" : {
+            "type" : "string",
+            "description" : "Filter on customer names"
+          },
+          "example" : "name=marrie",
+          "style" : "form",
+          "explode" : true
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "description" : "so be used with size to navigate throw result set",
+          "schema" : {
+            "type" : "number",
+            "description" : "so be used with size to navigate throw result set"
+          },
+          "example" : 2,
+          "style" : "form",
+          "explode" : true
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "required" : false,
+          "description" : "number of records to be returned. Default is 100.",
+          "schema" : {
+            "type" : "number",
+            "description" : "number of records to be returned. Default is 100."
+          },
+          "example" : 100,
+          "style" : "form",
+          "explode" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/customer"
+                  }
+                },
+                "example" : "[\n  {\n    \"id\": 123,\n    \"name\": \"Ben\"\n  },\n  {\n    \"id\": 456,\n    \"name\": \"Gaby\",\n    \"location\": \"Berlin\"\n  }\n]"
+              }
+            }
+          }
+        },
+        "security" : [ ]
+      },
+      "post" : {
+        "summary" : "Create a new customer",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/customer"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Status 201",
+            "headers" : {
+              "Location" : {
+                "description" : "Location header, containing link to newly created customer",
+                "required" : false,
+                "style" : "simple",
+                "explode" : false,
+                "schema" : {
+                  "type" : "string",
+                  "description" : "Location header, containing link to newly created customer"
+                },
+                "example" : "/customers/123"
+              }
+            }
+          },
+          "409" : {
+            "description" : "Record could not be added",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{customerID}" : {
+      "get" : {
+        "summary" : "Get single customer",
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/customer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Update a customer",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/customer"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Status 200"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete a customer",
+        "responses" : {
+          "200" : {
+            "description" : "Status 200"
+          },
+          "404" : {
+            "description" : "Status 404"
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "customerID",
+        "in" : "path",
+        "required" : true,
+        "description" : "ID of the customer",
+        "schema" : {
+          "type" : "string",
+          "description" : "ID of the customer"
+        },
+        "example" : "123",
+        "style" : "simple",
+        "explode" : false,
+        "x-original-ref" : "#/components/parameters/customerID"
+      } ]
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "customer" : {
+        "type" : "object",
+        "required" : [ "id" ],
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "mail" : {
+            "type" : "string"
+          },
+          "age" : {
+            "type" : "number"
+          },
+          "location" : {
+            "type" : "string"
+          }
+        },
+        "example" : "{\r\n  \"id\": \"456789\",\r\n  \"name\": \"Paul\",\r\n  \"mail\": \"jsmith@example.com\",\r\n  \"age\": 33,\r\n  \"location\": \"Bonn\"\r\n}"
+      },
+      "error" : {
+        "type" : "object",
+        "properties" : {
+          "errorCode" : {
+            "type" : "number",
+            "readOnly" : true,
+            "minimum" : 400,
+            "maximum" : 599,
+            "example" : 404
+          },
+          "errorMessage" : {
+            "type" : "string",
+            "example" : "Not Found"
+          },
+          "errorDetails" : {
+            "type" : "string",
+            "example" : "Using an unknown id"
+          }
+        },
+        "example" : "{\n    \"errorCode\": 404,\n    \"errorMessage\": \"Not found\",\n    \"errorDetails\": \"Using an unknown id\"\n}"
+      }
+    },
+    "parameters" : {
+      "customerID" : {
+        "name" : "customerID",
+        "in" : "path",
+        "required" : true,
+        "description" : "ID of the customer",
+        "schema" : {
+          "type" : "string",
+          "description" : "ID of the customer"
+        },
+        "example" : "123",
+        "style" : "simple",
+        "explode" : false,
+        "x-original-ref" : "#/components/parameters/customerID"
+      }
+    },
+    "securitySchemes" : {
+      "Basic authentication" : {
+        "type" : "http",
+        "scheme" : "basic"
+      },
+      "OpenID Connect" : {
+        "type" : "openIdConnect",
+        "openIdConnectUrl" : "https://localhost:9080"
+      },
+      "OAuth2" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "scopes" : {
+              "mail" : "user mail",
+              "firstname" : "given name"
+            }
+          },
+          "authorizationCode" : {
+            "scopes" : {
+              "mail" : "user mail",
+              "firstname" : "given name"
+            }
+          }
+        }
+      }
+    }
+  }
+}

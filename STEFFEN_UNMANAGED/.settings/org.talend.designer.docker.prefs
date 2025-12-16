@@ -1,0 +1,2 @@
+eclipse.preferences.version=1
+template_dockerfile_script=FROM eclipse-temurin\:17-jre-windowsservercore-1809\r\nCOPY /maven C\:/maven\r\nWORKDIR C\:/maven/${talend.job.finalName}/${talend.job.name}\r\nENV JAVA_TOOL_OPTIONS "${talend.job.jvmargs}"\r\nENTRYPOINT ["powershell", "-NoProfile", "-Command", "java -jar .\\\\${talend.job.finalName}.jar"]\r\n
